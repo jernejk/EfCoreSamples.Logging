@@ -12,7 +12,7 @@
 
     <p>We can solve this problem with <a href="https://docs.microsoft.com/en-us/ef/core/querying/tags">EF Core Query Tags</a> (<code>TagWith</code>) introduced in EF Core 2.2.</p>
 
-    <p>However, Query Tags works when we are selecting data from a <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1?view=efcore-3.1">DbSet</a> while insert, updates, custom SQL and other operations are not covered by this features or we cannot add <code>TagWith</code>.</p>
+    <p>However, Query Tags works when we are selecting data from a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.iqueryable?view=netcore-3.1">IQueryable&lt;T></a> while insert, updates, custom SQL and other operations are not covered by this features or we cannot add <code>TagWith</code>.</p>
     <p>To solve this problem, we are using <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1#log-scopes">Log Scopes</a> to add context to those queries indirectly.</p>
 </div>
 
@@ -45,7 +45,7 @@
 <div>
     <h2 id="query-tag">Log with Query Tags</h2>
 
-    <p>When do queries directly from a <code>DbSet</code> we can use <code>TagWith</code>.</p>
+    <p>When do queries directly from a <code>IQueryable</code> we can use <code>TagWith</code>.</p>
 
     <h4 id="query-tag-query">Query from DB</h4>
     <script src="https://gist.github.com/jernejk/3a7cdd0ef7575fc72917175ae7b5e5f9.js"></script>
