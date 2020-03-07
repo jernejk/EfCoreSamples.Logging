@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using EfCoreSamples.Logging.Web.Models;
 using EfCoreSamples.Logging.Persistence;
 using System.Threading;
 
@@ -58,43 +53,6 @@ namespace EfCoreSamples.Logging.Web.Controllers
             }
 
             return View();
-        }
-
-        public async Task<IActionResult> GetTweets([FromQuery] string logType = "", CancellationToken ct = default)
-        {
-            var viewModel = new GetTweetsViewModel();
-            viewModel.LogType = logType;
-            switch (logType)
-            {
-                case "query-tag":
-                    viewModel.LogTypeName = "Only Query Tags (WithTag)";
-                    viewModel.ImagePath = "/img/efcore-logging-query-tag.png";
-                    viewModel.Tweets = await _twitterService.GetTweetsWithQueryTags(ct);
-                    break;
-                case "all":
-                    viewModel.LogTypeName = "Full logging";
-                    viewModel.ImagePath = "/img/efcore-logging-full-log.png";
-                    viewModel.Tweets = await _twitterService.GetTweetsWithExtraLogs(ct);
-                    break;
-                case "external":
-                    viewModel.LogTypeName = "External logging";
-                    viewModel.ImagePath = "/img/efcore-logging-external.png";
-
-                    using (_logger.EFQueryScope("GetTweets"))
-                    {
-                        viewModel.Tweets = await _twitterService.GetTweets(ct);
-                    }
-
-                    break;
-
-                default:
-                    viewModel.LogTypeName = "No additional logs";
-                    viewModel.ImagePath = "/img/efcore-logging-no-log.png";
-                    viewModel.Tweets = await _twitterService.GetTweets(ct);
-                    break;
-            }
-
-            return View(viewModel);
         }
 
         public IActionResult Privacy()
