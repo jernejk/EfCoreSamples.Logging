@@ -2,27 +2,26 @@
 
 namespace EfCoreSamples.Logging.Persistence.Migrations
 {
-    public partial class StoreProc : Migration
+    public partial class AddStoreProc : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
 -- =============================================
--- Author:		JK
+-- Author:              JK
 -- Create date: 2020/02/18
--- Description:	Just for demonstrating logging
+-- Description: Just for demonstrating logging
 -- =============================================
 CREATE PROCEDURE InsertTweet
-	@Username nvarchar,
-	@Message nvarchar
+        @Username nvarchar,
+        @Message nvarchar
 AS
 BEGIN
-	INSERT INTO Tweets
-           (Username, Message)
+        INSERT INTO Tweets
+           (Id, Username, Message, CreatedUtc)
      VALUES
-           (@Username, @Message)
-END
-GO");
+           (NEWID(), @Username, @Message, GETUTCDATE())
+END");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

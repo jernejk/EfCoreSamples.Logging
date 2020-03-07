@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfCoreSamples.Logging.Persistence.Migrations
 {
     [DbContext(typeof(TwitterDbContext))]
-    [Migration("20200218122631_SeedData")]
-    partial class SeedData
+    [Migration("20200307140054_AddStoreProc")]
+    partial class AddStoreProc
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 

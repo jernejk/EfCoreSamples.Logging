@@ -30,11 +30,25 @@ namespace EfCoreSamples.Logging.Web
             // Added a sample service for testing out logging.
             services.AddTransient<ITwitterService, TwitterService>();
 
-            // Add EF Core.
+            // By default we are adding SQL Server DB context.
             services.AddDbContextPool<TwitterDbContext>(options =>
+            {
                 options.UseSqlServer(
                     Configuration.GetConnectionString("TwitterSampleDB"),
-                    b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence")));
+                    b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence"));
+
+#if DEBUG
+                // Most project shouldn't expose sensitive data, which is why we are
+                // limiting to be available only in DEBUG mode.
+                // If this is not, SQL "parameters" will be '?' instead of actual values.
+                options.EnableSensitiveDataLogging();
+#endif
+            });
+
+            // However, we can also use SQLite instead or other DB providers!
+            //services.AddDbContext<TwitterDbContext>(options =>
+            //    options.UseSqlite("Data Source=Twitter.db", x => { })
+            //);
 
             services.AddTransient<DbContextInitializer<TwitterDbContext>>();
         }

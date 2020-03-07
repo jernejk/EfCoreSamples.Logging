@@ -2,7 +2,114 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <h1 class="display-4">Welcome to EF Core logging</h1>
+    <p>
+        This website was build to show you how you can do SQL query logging when using EF Core.<br />
+        When using <code>AddDbContextPool</code> or <code>AddDbContext</code> the logs will be included by default.<br />
+        The problem arises when you try to figure out the origin of the query.
+    </p>
+
+    <p>We can solve this problem with <a href="https://docs.microsoft.com/en-us/ef/core/querying/tags">EF Core Query Tags</a> (<code>TagWith</code>) introduced in EF Core 2.2.</p>
+
+    <p>However, Query Tags works when we are selecting data from a <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.dbset-1?view=efcore-3.1">DbSet</a> while insert, updates, custom SQL and other operations are not covered by this features or we cannot add <code>TagWith</code>.</p>
+    <p>To solve this problem, we are using <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1#log-scopes">Log Scopes</a> to add context to those queries indirectly.</p>
+</div>
+
+<div>
+    <h2 id="no-log">No logs</h2>
+
+    <p>This is an example of a baseline query with no additional log context.</p>
+
+    <h4 id="no-log-query">Query from DB</h4>
+    <script src="https://gist.github.com/jernejk/ebca2642ab85147d1f363fb9b9903d44.js"></script>
+
+    <img src="~/img/efcore-logging-no-log.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=no-log#no-log'">Run query</button>
+    <br />
+    <br />
+
+    <h4 id="no-log-insert">Insert entry</h4>
+    <script src="https://gist.github.com/jernejk/b2f500ceb8776ce5f2a31a1458868a67.js"></script>
+
+    <img src="~/img/efcore-logging-no-log-insert.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=insert-no-log#no-log-insert'">Run query</button>
+    <br />
+    <br />
+</div>
+
+<div>
+    <h2 id="query-tag">Log with Query Tags</h2>
+
+    <p>When do queries directly from a <code>DbSet</code> we can use <code>TagWith</code>.</p>
+
+    <h4 id="query-tag-query">Query from DB</h4>
+    <script src="https://gist.github.com/jernejk/3a7cdd0ef7575fc72917175ae7b5e5f9.js"></script>
+
+    <img src="~/img/efcore-logging-query-tag.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=query-tag#query-tag-query'">Run query</button>
+    <br />
+    <br />
+</div>
+
+<div>
+    <h2 id="scope-log">Log with Log Scope</h2>
+
+    <p>Log Scopes are very useful when we can't use <code>TagWith</code> or we want to put multiple queries under same context.</p>
+
+    <h4 id="scope-log-query">Query from DB with indirect Log Scope</h4>
+    <script src="https://gist.github.com/jernejk/642a87dadc975685293ea764988ca06c.js"></script>
+
+    <img src="~/img/efcore-logging-external.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=scope-log#scope-log-query'">Run query</button>
+    <br />
+    <br />
+
+    <h4 id="scope-log-insert">Insert entities</h4>
+    <script src="https://gist.github.com/jernejk/5d473f9c2fb2a1b6ae71d73175930735.js"></script>
+
+    <img src="~/img/efcore-logging-log-scope-insert.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=scope-log-insert#scope-log-insert'">Run query</button>
+    <br />
+    <br />
+
+    <h4 id="scope-log-proc">Run store procs</h4>
+    <script src="https://gist.github.com/jernejk/05aaf1141224fc6e44dd89547a82fe1e.js"></script>
+
+    <img src="~/img/efcore-logging-log-scope-store-procs.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=scope-log-proc#scope-log-proc'">Run query</button>
+    <br />
+    <br />
+</div>
+
+<div>
+    <h2 id="all">Combine</h2>
+
+    <p>
+        When possible I use both Log Scopes and <code>TagWith</code>.
+        The <code>TagWith</code> is more widely accessible, like for instance SQL Server Profiler.<br/>
+        On the other hand Log Scopes give us more consistencies between different queries make it easier to filter queries.
+    </p>
+
+    <h4 id="scope-log-query">Query with TagWith and Log Scope</h4>
+    <script src="https://gist.github.com/jernejk/daa488d7055e43d8cd1c9bde99526d38.js"></script>
+
+    <img src="~/img/efcore-logging-full-log.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button onclick="location.href='/?logType=all#all-query'">Run query</button>
+    <br />
+    <br />
 </div>

@@ -13,7 +13,8 @@ namespace EfCoreSamples.Logging.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Username = table.Column<string>(nullable: true),
-                    Message = table.Column<string>(nullable: true)
+                    Message = table.Column<string>(nullable: true),
+                    CreatedUtc = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

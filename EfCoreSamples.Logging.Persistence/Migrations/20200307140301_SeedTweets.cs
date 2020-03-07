@@ -3,11 +3,10 @@ using System;
 
 namespace EfCoreSamples.Logging.Persistence.Migrations
 {
-    public partial class SeedData : Migration
+    public partial class SeedTweets : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.InsertData(
                 table: "Tweets",
                 columns: new[] { "Id", "Username", "Message", "CreatedUtc" },

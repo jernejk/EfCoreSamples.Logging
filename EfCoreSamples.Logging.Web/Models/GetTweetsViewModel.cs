@@ -9,5 +9,6 @@ namespace EfCoreSamples.Logging.Web.Models
 
         public string LogTypeName { get; set; }
         public string LogType { get; set; }
+        public string ImagePath { get; internal set; }
     }
 }

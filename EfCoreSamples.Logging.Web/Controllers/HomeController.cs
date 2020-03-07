@@ -22,8 +22,41 @@ namespace EfCoreSamples.Logging.Web.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index([FromQuery] string logType = "", CancellationToken ct = default)
         {
+            switch (logType)
+            {
+                case "query-tag":
+                    _ = await _twitterService.GetTweetsWithQueryTags(ct);
+                    break;
+                case "all":
+                    _ = await _twitterService.GetTweetsWithExtraLogs(ct);
+                    break;
+
+                case "scope-log":
+                    using (_logger.EFQueryScope("GetTweets"))
+                    {
+                        _ = await _twitterService.GetTweets(ct);
+                    }
+                    break;
+
+                case "scope-log-insert":
+                    await _twitterService.InsertTweet("jk", "Insert with Log Scope.", ct);
+                    break;
+
+                case "scope-log-proc":
+                    await _twitterService.InsertTweetStoreProc("jk", "Store procedure insert.", ct);
+                    break;
+
+                case "no-log":
+                    _ = await _twitterService.GetTweets(ct);
+                    break;
+
+                case "insert-no-log":
+                    await _twitterService.InsertTweetWithoutLogScope("jk", "Traditional insert.", ct);
+                    break;
+            }
+
             return View();
         }
 
@@ -31,29 +64,34 @@ namespace EfCoreSamples.Logging.Web.Controllers
         {
             var viewModel = new GetTweetsViewModel();
             viewModel.LogType = logType;
-            if (string.IsNullOrWhiteSpace(logType))
+            switch (logType)
             {
-                viewModel.LogTypeName = "No additional logs";
-                viewModel.Tweets = await _twitterService.GetTweets(ct);
-            }
-            else if (logType == "query-tag")
-            {
-                viewModel.LogTypeName = "Only Query Tags (WithTag)";
-                viewModel.Tweets = await _twitterService.GetTweetsWithQueryTags(ct);
-            }
-            else if (logType == "all")
-            {
-                viewModel.LogTypeName = "Full logging";
-                viewModel.Tweets = await _twitterService.GetTweetsWithExtraLogs(ct);
-            }
-            else if (logType == "external")
-            {
-                viewModel.LogTypeName = "External logging";
+                case "query-tag":
+                    viewModel.LogTypeName = "Only Query Tags (WithTag)";
+                    viewModel.ImagePath = "/img/efcore-logging-query-tag.png";
+                    viewModel.Tweets = await _twitterService.GetTweetsWithQueryTags(ct);
+                    break;
+                case "all":
+                    viewModel.LogTypeName = "Full logging";
+                    viewModel.ImagePath = "/img/efcore-logging-full-log.png";
+                    viewModel.Tweets = await _twitterService.GetTweetsWithExtraLogs(ct);
+                    break;
+                case "external":
+                    viewModel.LogTypeName = "External logging";
+                    viewModel.ImagePath = "/img/efcore-logging-external.png";
 
-                using (_logger.EFQueryScope("GetTweets"))
-                {
+                    using (_logger.EFQueryScope("GetTweets"))
+                    {
+                        viewModel.Tweets = await _twitterService.GetTweets(ct);
+                    }
+
+                    break;
+
+                default:
+                    viewModel.LogTypeName = "No additional logs";
+                    viewModel.ImagePath = "/img/efcore-logging-no-log.png";
                     viewModel.Tweets = await _twitterService.GetTweets(ct);
-                }
+                    break;
             }
 
             return View(viewModel);
