@@ -1,0 +1,24 @@
+﻿@model GetTweetsViewModel
+@{
+    ViewData["Title"] = "GetTweets";
+}
+
+<h1>Get Tweets</h1>
+
+<p>This page will demonstrate how logs looks like depending on how you log EF Queries.</p>
+
+<div>
+    <h4>Try different log styles</h4>
+
+    <ul>
+        <li><a href="/Home/GetTweets">No additional logs</a></li>
+        <li><a href="/Home/GetTweets?logType=external">External logging</a></li>
+        <li><a href="/Home/GetTweets?logType=query-tag">Only Query Tags (WithTag)</a></li>
+        <li><a href="/Home/GetTweets?logType=all">Full logging</a></li>
+    </ul>
+</div>
+
+<div>
+    <h4>Current log style: @Model.LogTypeName</h4>
+
+</div>
