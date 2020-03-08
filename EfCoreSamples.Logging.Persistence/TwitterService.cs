@@ -104,6 +104,7 @@ namespace EfCoreSamples.Logging.Persistence
                         new SqlParameter("Message", message))
                     // A hack to make STORE PROC work when they don't return anything.
                     .AsNoTracking()
+                    .TagWith("InsertTweetStoreProc + LogContext")
                     .Select(x => new { })
                     .AsEnumerable()
                     .FirstOrDefault();
