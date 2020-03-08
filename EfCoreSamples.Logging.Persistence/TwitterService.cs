@@ -89,6 +89,7 @@ namespace EfCoreSamples.Logging.Persistence
                     CreatedUtc = DateTime.UtcNow
                 });
 
+                // Queries are happening here and they are batched together into a single SQL request.
                 await _context.SaveChangesAsync(ct);
             }
         }
