@@ -14,6 +14,11 @@
 
     <p>However, Query Tags works when we are selecting data from a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.iqueryable?view=netcore-3.1">IQueryable&lt;T></a> while insert, updates, custom SQL and other operations are not covered by this features or we cannot add <code>TagWith</code>.</p>
     <p>To solve this problem, we are using <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1#log-scopes">Log Scopes</a> to add context to those queries indirectly.</p>
+
+    <h4>Seq queries</h4>
+
+    <p>Find all EF Core queries (SQL statements)</p>
+    <script src="https://gist.github.com/jernejk/ab737b82cd6061051e5987eabadcceec.js"></script>
 </div>
 
 <div>
@@ -27,7 +32,7 @@
     <img src="~/img/efcore-logging-no-log.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=no-log#no-log'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=no-log#no-log'">Run query</button>
     <br />
     <br />
 
@@ -37,7 +42,7 @@
     <img src="~/img/efcore-logging-no-log-insert.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=insert-no-log#no-log-insert'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=insert-no-log#no-log-insert'">Run query</button>
     <br />
     <br />
 </div>
@@ -53,7 +58,7 @@
     <img src="~/img/efcore-logging-query-tag.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=query-tag#query-tag-query'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=query-tag#query-tag-query'">Run query</button>
     <br />
     <br />
 </div>
@@ -69,7 +74,7 @@
     <img src="~/img/efcore-logging-external.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=scope-log#scope-log-query'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=scope-log#scope-log-query'">Run query</button>
     <br />
     <br />
 
@@ -79,37 +84,55 @@
     <img src="~/img/efcore-logging-log-scope-insert.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=scope-log-insert#scope-log-insert'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=scope-log-insert#scope-log-insert'">Run query</button>
     <br />
     <br />
 
     <h4 id="scope-log-proc">Run store procs</h4>
-    <script src="https://gist.github.com/jernejk/05aaf1141224fc6e44dd89547a82fe1e.js"></script>
+    <script src="https://gist.github.com/jernejk/1c6a05481dfc207be8c5d10af564fd2e.js"></script>
 
     <img src="~/img/efcore-logging-log-scope-store-procs.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=scope-log-proc#scope-log-proc'">Run query</button>
+    @if (Startup.UseSqlService)
+    {
+        <button class="btn btn-primary" onclick="location.href='/?logType=scope-log-proc#scope-log-proc'">Run query</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" disabled>Run query</button>
+        <p><b>NOTE:</b> SQLite does not support store procedures!</p>
+    }
     <br />
     <br />
 </div>
 
 <div>
-    <h2 id="all">Combine</h2>
+    <h2 id="all-query">Combine</h2>
 
     <p>
         When possible I use both Log Scopes and <code>TagWith</code>.
-        The <code>TagWith</code> is more widely accessible, like for instance SQL Server Profiler.<br/>
+        The <code>TagWith</code> is more widely accessible, like for instance SQL Server Profiler.<br />
         On the other hand Log Scopes give us more consistencies between different queries make it easier to filter queries.
     </p>
 
-    <h4 id="scope-log-query">Query with TagWith and Log Scope</h4>
+    <h4 id="scope-log-query">EF Query with TagWith and Log Scope</h4>
     <script src="https://gist.github.com/jernejk/daa488d7055e43d8cd1c9bde99526d38.js"></script>
 
     <img src="~/img/efcore-logging-full-log.png" style="max-width: 800px;" />
     <br />
     <br />
-    <button onclick="location.href='/?logType=all#all-query'">Run query</button>
+    <button class="btn btn-primary" onclick="location.href='/?logType=all#all-query'">Run query</button>
+    <br />
+    <br />
+
+    <h4 id="all-sql-query">SQL Query with TagWith and Log Scope</h4>
+    <script src="https://gist.github.com/jernejk/a8d7bafc89e3d793e9ed72be7b62d5eb.js"></script>
+
+    <img src="~/img/efcore-logging-full-log-sql.png" style="max-width: 800px;" />
+    <br />
+    <br />
+    <button class="btn btn-primary" onclick="location.href='/?logType=all-sql#all-sql-query'">Run query</button>
     <br />
     <br />
 </div>

@@ -15,6 +15,8 @@ namespace EfCoreSamples.Logging.Web
             Configuration = configuration;
         }
 
+        public static bool UseSqlService { get; set; } = false;
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -28,13 +30,19 @@ namespace EfCoreSamples.Logging.Web
             // By default we are adding SQL Server DB context.
             services.AddDbContextPool<TwitterDbContext>(options =>
             {
-                // Using SQLite by default as it is easier setup.
-                options.UseSqlite("Data Source=db.sqlite");
+                if (UseSqlService)
+                {
+                    // You can also use SQL Server.
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("TwitterSampleDB"),
+                        b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence"));
+                }
+                else
+                {
+                    // Using SQLite by default as it is easier setup.
+                    options.UseSqlite("Data Source=db.sqlite");
+                }
 
-                // You can also use SQL Server.
-                //options.UseSqlServer(
-                //    Configuration.GetConnectionString("TwitterSampleDB"),
-                //    b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence"));
 
 #if DEBUG
                 // Most project shouldn't expose sensitive data, which is why we are
