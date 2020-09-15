@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /EfCoreSamples.Logging.Web/Twitter.db
+/EfCoreSamples.Logging.Web/db.sqlite

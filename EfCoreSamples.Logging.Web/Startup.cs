@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EfCoreSamples.Logging.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,9 +28,13 @@ namespace EfCoreSamples.Logging.Web
             // By default we are adding SQL Server DB context.
             services.AddDbContextPool<TwitterDbContext>(options =>
             {
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("TwitterSampleDB"),
-                    b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence"));
+                // Using SQLite by default as it is easier setup.
+                options.UseSqlite("Data Source=db.sqlite");
+
+                // You can also use SQL Server.
+                //options.UseSqlServer(
+                //    Configuration.GetConnectionString("TwitterSampleDB"),
+                //    b => b.MigrationsAssembly("EfCoreSamples.Logging.Persistence"));
 
 #if DEBUG
                 // Most project shouldn't expose sensitive data, which is why we are

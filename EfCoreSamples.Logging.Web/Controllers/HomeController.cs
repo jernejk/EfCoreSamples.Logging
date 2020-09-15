@@ -9,7 +9,7 @@ namespace EfCoreSamples.Logging.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ITwitterService _twitterService;
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger _logger;
 
         public HomeController(ITwitterService twitterService, ILogger<HomeController> logger)
         {
