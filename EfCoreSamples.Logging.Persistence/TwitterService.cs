@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,8 +23,8 @@ namespace EfCoreSamples.Logging.Persistence
         public async Task<IEnumerable<Tweet>> GetTweets(CancellationToken ct = default)
         {
             // This will result following SQL query:
-            //  SELECT[t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
-            //  FROM[Tweets] AS[t]
+            //  SELECT [t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
+            //  FROM [Tweets] AS[t]
             //
             // No additional context is logged in rich logger.
             return await _context.Tweets
@@ -38,8 +37,8 @@ namespace EfCoreSamples.Logging.Persistence
             // This will result following SQL query:
             //  -- GetTweets
             //
-            //  SELECT[t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
-            //  FROM[Tweets] AS[t]
+            //  SELECT [t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
+            //  FROM [Tweets] AS[t]
             //
             // No additional context is logged in rich logger.
             return await _context.Tweets
@@ -53,8 +52,8 @@ namespace EfCoreSamples.Logging.Persistence
             // This will result following SQL query:
             //  --GetTweets + LogContext
             //  
-            //  SELECT[t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
-            //  FROM[Tweets] AS[t]
+            //  SELECT [t].[Id], [t].[CreatedUtc], [t].[Message], [t].[Username]
+            //  FROM [Tweets] AS[t]
             //
             // On top of that, it will also have property EFQueries with value "GetTweetsLog".
             using (_logger.EFQueryScope("GetTweetsLog"))
@@ -63,6 +62,24 @@ namespace EfCoreSamples.Logging.Persistence
                     .TagWith("GetTweets + LogContext")
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+            }
+        }
+
+        public async Task<IEnumerable<Tweet>> GetTweetsWithExtraLogsAsSql(CancellationToken ct = default)
+        {
+            // This will result following SQL query:
+            //  --GetTweets SQL + LogContext
+            //  
+            //  SELECT * FROM Tweets
+            //
+            // On top of that, it will also have property EFQueries with value "GetTweetsLog".
+            using (_logger.EFQueryScope("GetTweetsLog"))
+            {
+                return await _context.Tweets
+                    .FromSqlRaw("select * from Tweets")
+                    .AsNoTracking()
+                    .TagWith("GetTweets SQL + LogContext")
+                    .ToListAsync(ct);
             }
         }
 
@@ -94,24 +111,16 @@ namespace EfCoreSamples.Logging.Persistence
             }
         }
 
-        public Task InsertTweetStoreProc(string username, string message, CancellationToken ct = default)
+        public async Task InsertTweetStoreProc(string username, string message, CancellationToken ct = default)
         {
             using (_logger.EFQueryScope("InsertTweetStoreProc"))
             {
-                _ = _context.Tweets
-                    .FromSqlRaw(
+                _ = await _context.Database
+                    .ExecuteSqlRawAsync(
                         "InsertTweet @Username, @Message",
                         new SqlParameter("Username", username),
-                        new SqlParameter("Message", message))
-                    // A hack to make STORE PROC work when they don't return anything.
-                    .AsNoTracking()
-                    .TagWith("InsertTweetStoreProc + LogContext")
-                    .Select(x => new { })
-                    .AsEnumerable()
-                    .FirstOrDefault();
+                        new SqlParameter("Message", message));
             }
-
-            return Task.CompletedTask;
         }
     }
 
@@ -124,5 +133,6 @@ namespace EfCoreSamples.Logging.Persistence
         Task InsertTweetWithoutLogScope(string username, string message, CancellationToken ct = default);
         Task InsertTweet(string username, string message, CancellationToken ct = default);
         Task InsertTweetStoreProc(string username, string message, CancellationToken ct = default);
+        Task<IEnumerable<Tweet>> GetTweetsWithExtraLogsAsSql(CancellationToken ct = default);
     }
 }
