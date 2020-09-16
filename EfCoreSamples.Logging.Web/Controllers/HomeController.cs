@@ -19,13 +19,20 @@ namespace EfCoreSamples.Logging.Web.Controllers
 
         public async Task<IActionResult> Index([FromQuery] string logType = "", CancellationToken ct = default)
         {
+            // NOTE: All results are intentionally discarded.
+            // The purpose is to see the logs that they generate.
             switch (logType)
             {
                 case "query-tag":
                     _ = await _twitterService.GetTweetsWithQueryTags(ct);
                     break;
+
                 case "all":
                     _ = await _twitterService.GetTweetsWithExtraLogs(ct);
+                    break;
+
+                case "all-sql":
+                    _ = await _twitterService.GetTweetsWithExtraLogsAsSql(ct);
                     break;
 
                 case "scope-log":
