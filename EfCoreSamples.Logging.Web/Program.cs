@@ -1,7 +1,6 @@
 // Logging based on https://jkdev.me/asp-net-core-serilog/ and https://github.com/datalust/dotnet6-serilog-example
 // NOTE: When upgrading from .NET 5 or earlier, add `<ImplicitUsings>enable</ImplicitUsings>` to **.csproj** file under `<PropertyGroup>`.
 // NOTE: While you can still use full Program.cs and Startup.cs, `.UseSerilog()` is marked as obsolete for them. It's safer to move to minimal APIs.
-// NOTE: This template includes EF Core as well, including DB migrations. You can remove it if EF Core is not required.
 using EfCoreSamples.Logging.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
