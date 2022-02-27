@@ -1,70 +1,66 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using EfCoreSamples.Logging.Persistence;
-using System.Threading;
 
-namespace EfCoreSamples.Logging.Web.Controllers
+namespace EfCoreSamples.Logging.Web.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ITwitterService _twitterService;
+    private readonly ILogger _logger;
+
+    public HomeController(ITwitterService twitterService, ILogger<HomeController> logger)
     {
-        private readonly ITwitterService _twitterService;
-        private readonly ILogger _logger;
+        _twitterService = twitterService;
+        _logger = logger;
+    }
 
-        public HomeController(ITwitterService twitterService, ILogger<HomeController> logger)
+    public async Task<IActionResult> Index([FromQuery] string logType = "", CancellationToken ct = default)
+    {
+        // NOTE: All results are intentionally discarded.
+        // The purpose is to see the logs that they generate.
+        switch (logType)
         {
-            _twitterService = twitterService;
-            _logger = logger;
-        }
+            case "query-tag":
+                _ = await _twitterService.GetTweetsWithQueryTags(ct);
+                break;
 
-        public async Task<IActionResult> Index([FromQuery] string logType = "", CancellationToken ct = default)
-        {
-            // NOTE: All results are intentionally discarded.
-            // The purpose is to see the logs that they generate.
-            switch (logType)
-            {
-                case "query-tag":
-                    _ = await _twitterService.GetTweetsWithQueryTags(ct);
-                    break;
+            case "all":
+                _ = await _twitterService.GetTweetsWithExtraLogs(ct);
+                break;
 
-                case "all":
-                    _ = await _twitterService.GetTweetsWithExtraLogs(ct);
-                    break;
+            case "all-sql":
+                _ = await _twitterService.GetTweetsWithExtraLogsAsSql(ct);
+                break;
 
-                case "all-sql":
-                    _ = await _twitterService.GetTweetsWithExtraLogsAsSql(ct);
-                    break;
-
-                case "scope-log":
-                    using (_logger.EFQueryScope("GetTweets"))
-                    {
-                        _ = await _twitterService.GetTweets(ct);
-                    }
-                    break;
-
-                case "scope-log-insert":
-                    await _twitterService.InsertTweet("jk", "Insert with Log Scope.", ct);
-                    break;
-
-                case "scope-log-proc":
-                    await _twitterService.InsertTweetStoreProc("jk", "Store procedure insert.", ct);
-                    break;
-
-                case "no-log":
+            case "scope-log":
+                using (_logger.QueryScope("GetTweets"))
+                {
                     _ = await _twitterService.GetTweets(ct);
-                    break;
+                }
+                break;
 
-                case "insert-no-log":
-                    await _twitterService.InsertTweetWithoutLogScope("jk", "Traditional insert.", ct);
-                    break;
-            }
+            case "scope-log-insert":
+                await _twitterService.InsertTweet("jk", "Insert with Log Scope.", ct);
+                break;
 
-            return View();
+            case "scope-log-proc":
+                await _twitterService.InsertTweetStoreProc("jk", "Store procedure insert.", ct);
+                break;
+
+            case "no-log":
+                _ = await _twitterService.GetTweets(ct);
+                break;
+
+            case "insert-no-log":
+                await _twitterService.InsertTweetWithoutLogScope("jk", "Traditional insert.", ct);
+                break;
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        return View();
+    }
+
+    public IActionResult Privacy()
+    {
+        return View();
     }
 }

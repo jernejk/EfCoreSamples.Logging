@@ -94,15 +94,8 @@
     <img src="~/img/efcore-logging-log-scope-store-procs.png" style="max-width: 800px;" />
     <br />
     <br />
-    @if (Startup.UseSqlService)
-    {
-        <button class="btn btn-primary" onclick="location.href='/?logType=scope-log-proc#scope-log-proc'">Run query</button>
-    }
-    else
-    {
-        <button class="btn btn-primary" disabled>Run query</button>
-        <p><b>NOTE:</b> SQLite does not support store procedures!</p>
-    }
+    <button class="btn btn-primary" onclick="location.href='/?logType=scope-log-proc#scope-log-proc'">Run query</button>
+    <p><b>NOTE:</b> SQLite does not support store procedures!</p>
     <br />
     <br />
 </div>
