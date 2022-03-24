@@ -10,6 +10,8 @@ namespace EfCoreSamples.Logging.Persistence;
 /// Generic DbContext initializers specialized in 2 things:
 /// 1. Ensure the DB is correctly migrated when using SQL Server
 /// 2. Ensure the DB is correctly initialized for in-memory/SQLite mostly used in (integration) testing
+/// NOTE: When using `_context.Database.EnsureCreatedAsync()` before migration, it will fail
+///       because `EnsureCreatedAsync` creates all of the tables but not migration table!
 /// </summary>
 /// <typeparam name="TDbContext">The DbContext type that needs to be initialized</typeparam>
 public class DbContextInitializer<TDbContext>
@@ -31,7 +33,7 @@ public class DbContextInitializer<TDbContext>
         if (OpenConnectionRequired(_context))
         {
             // SQLite needs to open connection first.
-            await _context.Database.OpenConnectionAsync();
+            await _context.Database.OpenConnectionAsync(ct);
         }
 
         if (IsMigrationSupported(_context))
@@ -48,25 +50,30 @@ public class DbContextInitializer<TDbContext>
 
                 // Run DB migration in transaction to make sure we don't partially migrate the DB in case of an error.
                 // Partial migrations can be a big problem to solve.
+                using var transaction = await _context.Database.BeginTransactionAsync(ct);
+
                 await _context.Database.MigrateAsync(ct);
+
+                await transaction.CommitAsync(ct);
             }
         }
         else
         {
             _logger.LogTrace("Creating DB for {DbContext}...", typeof(TDbContext).Name);
 
-            await _context.Database.EnsureCreatedAsync();
+            await _context.Database.EnsureCreatedAsync(ct);
         }
     }
 
-    public static bool IsMigrationSupported(DbContext context)
-        => context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory"
-        && context.Database.ProviderName != "Microsoft.EntityFrameworkCore.Sqlite";
+    public bool IsMigrationSupported(DbContext context)
+        => context.Database.ProviderName is not
+            ("Microsoft.EntityFrameworkCore.InMemory" or "Microsoft.EntityFrameworkCore.Sqlite");
 
-    public static bool OpenConnectionRequired(DbContext context)
+    public bool OpenConnectionRequired(DbContext context)
         => context.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite";
 
-    public static bool IsContextForUnitTesting(DbContext context)
-        => context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory"
-        || context.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite";
+    public bool IsContextForUnitTesting(DbContext context)
+        => context.Database.ProviderName is
+            "Microsoft.EntityFrameworkCore.InMemory" or "Microsoft.EntityFrameworkCore.Sqlite";
+
 }
