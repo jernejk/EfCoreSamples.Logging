@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace EfCoreSamples.Logging.Persistence;
 
 /// <summary>
-/// Generic DbContext initializers specialized in 2 things:
-/// 1. Ensure the DB is correctly migrated when using SQL Server
-/// 2. Ensure the DB is correctly initialized for in-memory/SQLite mostly used in (integration) testing
+/// Generic DbContext initializer specialized in correctly initializing SQL Server, SQLite, SQLite in-memory, Postgress and In-memory DB engines.
+/// For ASP.NET Core application, it should run in Program.cs before the application has fully started.
+/// For tests and scoped work, you can use this on initialization of the test/scoped work.
 /// NOTE: When using `_context.Database.EnsureCreatedAsync()` before migration, it will fail
 ///       because `EnsureCreatedAsync` creates all of the tables but not migration table!
 /// </summary>
@@ -75,5 +75,4 @@ public class DbContextInitializer<TDbContext>
     public bool IsContextForUnitTesting(DbContext context)
         => context.Database.ProviderName is
             "Microsoft.EntityFrameworkCore.InMemory" or "Microsoft.EntityFrameworkCore.Sqlite";
-
 }
